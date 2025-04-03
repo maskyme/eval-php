@@ -1,6 +1,3 @@
-<?php
-    require_once "./bdd.php";
-?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -9,6 +6,10 @@
     <title>Document</title>
 </head>
 <body>
-    
+    <?php
+        echo "<pre>";
+        print_r($user);
+        echo "</pre>";
+    ?>
 </body>
 </html>
