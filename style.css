@@ -114,3 +114,6 @@ body {
 .card-body strong {
     color: #333;
 }
+a {
+    text-decoration: none;
+}

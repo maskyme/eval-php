@@ -11,7 +11,7 @@ require_once "./bdd.php";
     <title>Interventions</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .popup {
             display: none;
@@ -39,17 +39,20 @@ require_once "./bdd.php";
 </head>
 
 <body>
-    <div class="container mt-5">
-        <h2>Interventions List</h2>
-        <table class="table table-bordered">
-            <thead>
+    <div class="mt-5 flex items-center flex-col w-full w-full max-w-[1600px] mx-auto">
+        <div class="flex items-center justify-between w-full mb-5">
+            <h2>Interventions List</h2>
+            <button type="button" class="bg-blue-600 px-3 py-2 text-white font-bold w-fit">Créer une intervention</button>
+        </div>
+        <table class="w-full text-sm text-left rtl:text-right">
+            <thead class="text-xs text-white uppercase bg-blue-600">
                 <tr>
-                    <th>Date de début</th>
-                    <th>Date de fin</th>
-                    <th>Durée</th>
-                    <th>Intervenant</th>
-                    <th>Client</th>
-                    <th>Action</th>
+                    <th class="px-6 py-3">Date de début</th>
+                    <th class="px-6 py-3">Date de fin</th>
+                    <th class="px-6 py-3">Durée</th>
+                    <th class="px-6 py-3">Intervenant</th>
+                    <th class="px-6 py-3">Client</th>
+                    <th class="px-6 py-3">Action</th>
                 </tr>
             </thead>
             <tbody id="interventionTable">
@@ -65,13 +68,13 @@ require_once "./bdd.php";
                 }
 
                 foreach ($interventions as $index => $intervention) {
-                    echo "<tr>";
-                    echo "<td>{$intervention['start_date']}</td>";
-                    echo "<td>{$intervention['end_date']}</td>";
-                    echo "<td>{$intervention['duration']}</td>";
-                    echo "<td>{$intervention['intervenant']}</td>";
-                    echo "<td>{$intervention['client']}</td>";
-                    echo "<td><button class='btn btn-primary' onclick='showPopup($index)'>Details</button></td>";
+                    echo "<tr class='bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200'>";
+                    echo "<td class='px-6 py-4'>{$intervention['start_date']}</td>";
+                    echo "<td class='px-6 py-4'>{$intervention['end_date']}</td>";
+                    echo "<td class='px-6 py-4'>{$intervention['duration']}</td>";
+                    echo "<td class='px-6 py-4'>{$intervention['intervenant']}</td>";
+                    echo "<td class='px-6 py-4'>{$intervention['client']}</td>";
+                    echo "<td class='px-6 py-4'><button class='btn btn-primary' onclick='showPopup($index)'>Details</button></td>";
                     echo "</tr>";
 
                     // Hidden popup content
