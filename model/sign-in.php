@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Stocker les informations de l'utilisateur dans la session
-    $_SESSION['connected_user'] = [
+    $_SESSION['user'] = [
         'id' => $user['id'],
         'nom' => $user['last_name'],
         'prenom' => $user['first_name'],
