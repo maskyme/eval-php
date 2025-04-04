@@ -61,6 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ];
 
     // Redirection après inscription
-    header('Location: ../list_intervention.php');
+    header('Location: ../account.php');
     exit;
 }

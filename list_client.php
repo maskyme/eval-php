@@ -33,8 +33,11 @@ if (isset($_POST['edit-user']) && !empty($_POST['edit-user'])) {
     }
 
     if (!empty($_POST['edit-category-user'])) {
-        $updates[] = "user_category_id = :categoryEdit";
-        $params['categoryEdit'] = $_POST['edit-category-user'];
+        $cat = $_POST['edit-category-user'];
+        if ($cat != 0) {
+            $updates[] = "user_category_id = :categoryEdit";
+            $params['categoryEdit'] = $_POST['edit-category-user'];
+        }
     }
 
 
@@ -74,11 +77,14 @@ if (isset($_POST['delete-id-user']) && !empty($_POST['delete-id-user'])) {
 <body>
     <?php
     require_once 'header.php';
+    if (isset($role) && $role != 1) {
+        header("Location: not_authorized.php");
+    }
     require_once 'logout.php';
     ?>
     <main class='px-40 pt-10'>
 
-        <h2 class='text-2xl font-bold pb-4'>Liste des employé</h2>
+        <h2 class='text-2xl font-bold pb-4'>Liste des clients</h2>
         <table class='min-w-full table-auto bg-white rounded-xl shadow-md overflow-hidden text-sm text-center'>
             <thead class="bg-blue-600 text-white uppercase text-xs tracking-wide">
                 <tr class='bg-blue-600 text-white'>
@@ -169,6 +175,7 @@ if (isset($_POST['delete-id-user']) && !empty($_POST['delete-id-user'])) {
                 <fieldset class="flex flex-col w-full">
                     <label for="edit-category-user" class="mb-2 text-sm opacity-70 font-bold">Catégorie</label>
                     <select name='edit-category-user' id="edit-category-user" class="border border-gray-300 rounded-lg p-2">
+                        <option value='0'>Client</option>
                         <?php
                         $categorys = $db->prepare('SELECT * FROM user_category');
                         $categorys->execute();
