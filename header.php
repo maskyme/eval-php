@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beautiful Header Menu</title>
-    <link rel="stylesheet" href="./styles.css">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>   
+
 </head>
 <body>
     <header class="header flex  items-center bg-blue-600 text-white">
