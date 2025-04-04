@@ -62,7 +62,13 @@ $filtered = false;
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>   
 </head>
-<body class='px-40 pt-10'>
+<body>
+    <?php
+      require_once 'header.php';
+      require_once 'logout.php';
+    ?>
+    <main class='px-40 pt-10'>
+
     <div class='w-full flex items-center justify-between pb-4'>
         <h2 class='text-2xl font-bold '>Liste des interventions</h2>
         <button onclick='popupIntervention()' class='text-xs px-3 py-2 rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition'>+ Ajouter une intervention</button>
@@ -179,6 +185,7 @@ $filtered = false;
              </fieldset>
         </form>
     </div>
+    </main>
     <script src='script.js'></script>
 </body>
 </html>

@@ -61,6 +61,10 @@
 </head>
 <body>
     <!-- Tableau clients -->
+    <?php
+      require_once 'header.php';
+      require_once 'logout.php';
+    ?>
     <h2>Liste des clients</h2>
     <table>
         <tr>
