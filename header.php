@@ -24,10 +24,12 @@ $role = $_SESSION['role'];
                     echo '<li><a href="./list_employe.php" class="text-sm sm:text-xl font-bold hover:opacity-90">Employés</a></li>';
                     echo '<li><a href="./list_client.php" class="text-sm sm:text-xl font-bold hover:opacity-90">Clients</a></li>';
                 }
+                if ($role == 1 or $role == 2) {
+                    echo '<li><a href="./list_intervention.php" class="text-sm sm:text-xl font-bold hover:opacity-90">Interventions</a></li>';
+                    echo '<li><a href="./account.php" class="text-sm sm:text-xl font-bold hover:opacity-90">Account</a></li>';
+                }
 
                 ?>
-                <li><a href="./list_intervention.php" class="text-sm sm:text-xl font-bold hover:opacity-90">Interventions</a></li>
-                <li><a href="./account.php" class="text-sm sm:text-xl font-bold hover:opacity-90">Account</a></li>
             </ul>
         </nav>
     </div>

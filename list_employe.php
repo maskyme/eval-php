@@ -81,7 +81,7 @@ if (isset($_POST['delete-id-user']) && !empty($_POST['delete-id-user'])) {
     ?>
     <main class='px-40 pt-10'>
 
-        <h2 class='text-2xl font-bold pb-4'>Liste des employé</h2>
+        <h2 class='text-2xl font-bold pb-4'>Liste des employés</h2>
         <table class='min-w-full table-auto bg-white rounded-xl shadow-md overflow-hidden text-sm text-center'>
             <thead class="bg-blue-600 text-white uppercase text-xs tracking-wide">
                 <tr class='bg-blue-600 text-white'>
