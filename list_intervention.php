@@ -339,7 +339,7 @@ if (isset($_POST['edit-intervention']) && !empty($_POST['edit-intervention'])) {
                             <td class='px-6 py-4'>" . $longDescription . "</td>
                             <td class='py-4 flex items-center justify-center gap-4'>
                                 <button onclick='editIntervention($id, $clientId, \"$startDate\", \"$startHour\", $employeeId, $interventionId, `" . htmlspecialchars($longDescription, ENT_QUOTES) . "`)' class='text-xs px-3 py-2 rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition'>Modifier</button>
-                                <button onclick='editIntervention($id, $clientId, \"$startDate\", \"$startHour\", $employeeId, $interventionId, `" . htmlspecialchars($longDescription, ENT_QUOTES) . "`)' class='text-xs px-3 py-2 rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition'>Modifier</button>
+                            
     
                                 <form method='POST'>
                                     <input type='hidden' value='" . $id . "' name='delete-id-intervention'/>
@@ -387,8 +387,7 @@ if (isset($_POST['edit-intervention']) && !empty($_POST['edit-intervention'])) {
 
 
 <fieldset class="flex flex-col w-full">
-    <label for="edit-intervention-name" class="mb-2 text-sm opacity-70 font-bold">Intervention</label>
-    <select name="edit-intervention-name" id="edit-intervention-name" class="border border-gray-300 rounded-lg p-2">
+    
     <label for="edit-intervention-name" class="mb-2 text-sm opacity-70 font-bold">Intervention</label>
     <select name="edit-intervention-name" id="edit-intervention-name" class="border border-gray-300 rounded-lg p-2">
         <?php
@@ -417,7 +416,6 @@ if (isset($_POST['edit-intervention']) && !empty($_POST['edit-intervention'])) {
     <label for="edit-longDescription" class="mb-2 text-sm opacity-70 font-bold">Description</label>
     <textarea name="edit-longDescription" placeholder='Description' id="edit-longDescription" class="border border-gray-300 rounded-lg p-2"></textarea>
 </fieldset>
-<input type='submit' value='Modifier' name='edit-btn-intervention' class="bg-blue-600  mt-2 text-white rounded-lg p-2 font-bold cursor-pointer hover:bg-blue-500 transition duration-300 w-full"/>
 <input type='submit' value='Modifier' name='edit-btn-intervention' class="bg-blue-600  mt-2 text-white rounded-lg p-2 font-bold cursor-pointer hover:bg-blue-500 transition duration-300 w-full"/>
         </form>
     </div>
