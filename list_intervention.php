@@ -252,6 +252,7 @@ if (isset($_POST['edit-intervention']) && !empty($_POST['edit-intervention'])) {
         <table class='min-w-full table-auto bg-white rounded-xl shadow-md overflow-hidden text-sm text-center'>
             <thead class="bg-blue-600 text-white uppercase text-xs tracking-wide">
                 <tr class='bg-blue-600 text-white'>
+                    <th class='py-4 px-10'>Terminé</th>
                     <th class='py-4 px-10'>Client</th>
                     <th class='py-4 px-10'>Date de début</th>
                     <th class='py-4 px-10'>Date de fin</th>
@@ -276,6 +277,7 @@ if (isset($_POST['edit-intervention']) && !empty($_POST['edit-intervention'])) {
                     i.long_description AS longDescription_intervention, 
                     ic.label AS category_label, 
                     ic.duration AS duration,
+                    i.is_ended as is_ended,
                     ue.id AS employee_id,
                     ue.first_name AS employee_first_name,
                     ue.last_name AS employee_last_name,
@@ -295,6 +297,7 @@ if (isset($_POST['edit-intervention']) && !empty($_POST['edit-intervention'])) {
                     i.end_time AS endTime_intervention, 
                     i.long_description AS longDescription_intervention, 
                     i.employee_id as employee_id,
+                    i.is_ended as is_ended,
                     ic.id AS short_description_id,
                     ic.label AS category_label, 
                     ic.duration AS duration,
@@ -316,6 +319,7 @@ if (isset($_POST['edit-intervention']) && !empty($_POST['edit-intervention'])) {
 
                 while($sqlIntervention = $sqlInterventions->fetch()) {
                     $id = $sqlIntervention['id_intervention'];
+                    $is_ended = $sqlIntervention['is_ended'];
                     $clientId = $sqlIntervention['client_id'];
                     $clientName = ucfirst($sqlIntervention['client_first_name']) . ' ' . ucfirst($sqlIntervention['client_last_name']);
                     $startTime = date('d/m/Y H:i', $sqlIntervention['startTime_intervention']);;
@@ -328,8 +332,22 @@ if (isset($_POST['edit-intervention']) && !empty($_POST['edit-intervention'])) {
                     $interventionName = htmlspecialchars($sqlIntervention['category_label']);
                     $duration = $sqlIntervention['duration'] . 'h';
                     $longDescription = htmlspecialchars($sqlIntervention['longDescription_intervention']);
+                    
 
                     echo "<tr class='hover:bg-gray-100 transition'>
+                            <td class='px-6 py-4'>
+                                <form method='POST' action='./is-ended.php'>
+                                    <input type='hidden' value='" . $id . "'/>";
+                                
+                                if ($is_ended == 0) {
+                                    echo "<input type='checkbox'/>";
+                                } else {
+                                    echo "<input type='checkbox' checked/>";
+
+                                }
+                                    
+                    echo "</form>
+                            </td>
                             <td class='px-6 py-4'>" . $clientName . "</td>
                             <td class='px-6 py-4'>" . $startTime . "</td>
                             <td class='px-6 py-4'>" . $endTime . "</td>
