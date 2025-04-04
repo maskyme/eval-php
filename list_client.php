@@ -74,6 +74,9 @@ if (isset($_POST['delete-id-user']) && !empty($_POST['delete-id-user'])) {
 <body>
     <?php
     require_once 'header.php';
+    if (isset($role) && $role != 1){
+        header("Location: not_authorized.php");
+      }
     require_once 'logout.php';
     ?>
     <main class='px-40 pt-10'>
