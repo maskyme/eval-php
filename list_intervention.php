@@ -45,50 +45,8 @@
         header('Location: list_intervention.php');
     }
 
-    if (isset($_POST['edit-intervention']) && !empty($_POST['edit-intervention'])) {
-    $id = $_POST['edit-id-intervention'];
-    $client = $_POST['edit-client'];
-    $employe = $_POST['edit-employe'];
-    $short_description_id = $_POST['edit-intervention'];
-    $longDescription = $_POST['edit-longDescription'];
-    $date = $_POST['edit-startDate']; // input date
-    $heure = $_POST['edit-startHour']; // input time
+    
 
-    $startDatetime = "$date $heure:00";
-    $startTime = strtotime($startDatetime);
-
-    // On récupère la durée de l’intervention (en heures)
-    $stmt = $db->prepare("SELECT duration FROM intervention_category WHERE id = :id");
-    $stmt->execute(['id' => $short_description_id]);
-    $category = $stmt->fetch();
-
-    if ($category) {
-        $duree = $category['duration'];
-        $endTime = $startTime + ($duree * 3600);
-
-        // Mise à jour
-        $update = $db->prepare("UPDATE intervention 
-            SET start_time = :start_time, 
-                end_time = :end_time,
-                client_id = :client, 
-                employee_id = :employee,
-                short_description_id = :short_desc,
-                long_description = :long_desc 
-            WHERE id = :id");
-
-        $update->execute([
-            'start_time' => $startTime,
-            'end_time' => $endTime,
-            'client' => $client,
-            'employee' => $employe,
-            'short_desc' => $short_description_id,
-            'long_desc' => $longDescription,
-            'id' => $id
-        ]);
-    }
-
-    header("Location: list_intervention.php");
-}
 
 ?>
 
@@ -254,7 +212,7 @@
                             <td class='px-6 py-4'>" . $duration . "</td>
                             <td class='px-6 py-4'>" . $longDescription . "</td>
                             <td class='py-4 flex items-center justify-center gap-4'>
-                                <button onclick='editIntervention($id, $clientId, \"$startDate\", \"$startHour\", $employeeId, $interventionId, \"$longDescription\")' class='text-xs px-3 py-2 rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition'>Modifier</button>
+                                <button onclick='editIntervention($id, $clientId, \"$startDate\", \"$startHour\", $employeeId, $interventionId, `" . htmlspecialchars($longDescription, ENT_QUOTES) . "`)' class='text-xs px-3 py-2 rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition'>Modifier</button>
     
                                 <form method='POST'>
                                     <input type='hidden' value='" . $id . "' name='delete-id-intervention'/>
@@ -273,7 +231,7 @@
     <div id="edit-intervention-popup" class='hidden bg-white p-6 gap-3 rounded-lg flex flex-col w-full max-w-[600px] px-10 absolute top-1/2 shadow left-1/2 -translate-x-1/2 -translate-y-1/2'>
         <button onclick='closePopupIntervention()'><i class="hgi hgi-stroke hgi-cancel-01 absolute right-10 top-4 text-xl cursor-pointer"></i></button>
         <h2 class='text-center text-2xl font-bold mb-4'>Modifier les informations</h2>
-        <form method='POST' class='flex flex-col items-center gap-4'>
+        <form action="./model/modif_intervention.php" method='POST' class='flex flex-col items-center gap-4'>
             <input type="hidden" id="edit-id-intervention" name="edit-id-intervention"/>
             <fieldset class="flex flex-col w-full">
                 <label for="edit-client" class="mb-2 text-sm opacity-70 font-bold">Clients</label>
@@ -302,8 +260,8 @@
 
 
 <fieldset class="flex flex-col w-full">
-    <label for="edit-intervention" class="mb-2 text-sm opacity-70 font-bold">Intervention</label>
-    <select name="edit-intervention" id="edit-intervention" class="border border-gray-300 rounded-lg p-2">
+    <label for="edit-intervention-name" class="mb-2 text-sm opacity-70 font-bold">Intervention</label>
+    <select name="edit-intervention-name" id="edit-intervention-name" class="border border-gray-300 rounded-lg p-2">
         <?php
             $interventionCats = $db->query('SELECT id, label FROM intervention_category');
             while ($cat = $interventionCats->fetch()) {
@@ -330,7 +288,7 @@
     <label for="edit-longDescription" class="mb-2 text-sm opacity-70 font-bold">Description</label>
     <textarea name="edit-longDescription" placeholder='Description' id="edit-longDescription" class="border border-gray-300 rounded-lg p-2"></textarea>
 </fieldset>
-<input type='submit' value='Modifier' name='edit-intervention' class="bg-blue-600  mt-2 text-white rounded-lg p-2 font-bold cursor-pointer hover:bg-blue-500 transition duration-300 w-full"/>
+<input type='submit' value='Modifier' name='edit-btn-intervention' class="bg-blue-600  mt-2 text-white rounded-lg p-2 font-bold cursor-pointer hover:bg-blue-500 transition duration-300 w-full"/>
         </form>
     </div>
     <script src='script.js'></script>
