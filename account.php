@@ -43,6 +43,8 @@
     </div>
     <div class="max-w-[1600px] mx-auto mt-10">
 
+    <div class="text-3xl font-bold mb-5 text-blue-600">Mes interventions</div>
+
     <table class='min-w-full table-auto bg-white rounded-xl shadow-md overflow-hidden text-sm text-center'>
         <thead class="bg-blue-600 text-white uppercase text-xs tracking-wide">
             <tr class='bg-blue-600 text-white'>
@@ -98,13 +100,19 @@
                             <td class='px-6 py-4'>" . $interventionName . "</td>
                             <td class='px-6 py-4'>" . $duration . "</td>
                             <td class='px-6 py-4'>" . $longDescription . "</td>
-                            <td class='py-4 flex items-center justify-center gap-4'>
-                                <button onclick='editIntervention()' class='text-xs px-3 py-2 rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition'>Modifier</button>
-    
-                                <form method='POST'>
+                            <td class='py-4 flex items-center justify-center gap-4'
+
+                        "?>
+                        <?php
+                            if ($user['user_categ'] == 1 || $user['user_categ'] == 2) {
+                             echo"   <form method='POST'>
                                     <input type='hidden' value='" . $id . "' name='delete-id-intervention'/>
                                     <input type='submit' value='Supprimer' name='delete-intervention' class='text-xs px-3 py-2 rounded-xl border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition cursor-pointer'/>
-                                </form>
+                                </form>";
+                            }
+                        
+                        ?>
+                        <?php echo "
                             </td>
                         </tr>";
                 }
