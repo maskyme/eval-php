@@ -45,6 +45,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ];
 
     // Rediriger vers la page d'accueil après connexion
-    header('Location: ../index.php');
+    header('Location: ../list_intervention.php');
     exit;
 }
