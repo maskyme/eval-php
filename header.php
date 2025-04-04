@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beautiful Header Menu</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>   
+
 </head>
 <body>
-    <header class="header">
+    <header class="header mb-10">
         <div class="logo">
             <a href="#">MyLogo</a>
         </div>
