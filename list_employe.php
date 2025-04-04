@@ -126,8 +126,7 @@ if (isset($_POST['delete-id-user']) && !empty($_POST['delete-id-user'])) {
                     <td >" . $sqlEmploye['adress'] . "</td>
                     <td class='py-4 flex items-center justify-center gap-4'>
                         <button onclick='editUser($id, \"$lastName\", \"$firstName\", \"$phone\", \"$email\", \"$adress\", $id_category)' class='text-xs px-3 py-2 rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition'>Modifier</button>
-                        <form method='POST' action='list_intervention.php'>
-                            <input type='hidden' name='filter_user_id' value='" . $sqlEmploye['idUser'] . "'/>
+                        <form method='POST' action='list_intervention.php?idUser=".$sqlEmploye['idUser']."'>
                             <input type='submit' value='Intervention' name='btn-intervention' class='text-xs px-3 py-2 rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition cursor-pointer'/>
                         </form>
                         <form method='POST'>
