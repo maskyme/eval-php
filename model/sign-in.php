@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Vérifier que les champs sont remplis
     if (empty($email) || empty($password)) {
         $_SESSION['error'] = "Veuillez remplir tous les champs.";
-        header('Location: '. $_SERVER['HTTP_REFERER']);
+        header('Location: ' . $_SERVER['HTTP_REFERER']);
         exit;
     }
 
@@ -22,14 +22,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!$user) {
         $_SESSION['error'] = "Aucun compte trouvé avec cet email.";
-        header('Location: '. $_SERVER['HTTP_REFERER']);
+        header('Location: ' . $_SERVER['HTTP_REFERER']);
         exit;
     }
 
     // Vérifier si le mot de passe est correct
     if (!password_verify($password, $user['password'])) {
         $_SESSION['error'] = "Mot de passe incorrect.";
-        header('Location: '. $_SERVER['HTTP_REFERER']);
+        header('Location: ' . $_SERVER['HTTP_REFERER']);
         exit;
     }
 
@@ -45,6 +45,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ];
 
     // Rediriger vers la page d'accueil après connexion
-    header('Location: ../list_intervention.php');
+    header('Location: ../account.php');
     exit;
 }
