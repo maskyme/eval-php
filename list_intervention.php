@@ -1,53 +1,49 @@
 <?php
-require_once './bdd.php';
+    require_once './bdd.php';
 
+     if (isset($_POST['add-intervention']) && !empty($_POST['add-intervention'])) {
+    $shortDescriptionId = $_POST['intervention-name'];
+    $date = $_POST['intervention-dateTime'];
+    $time = $_POST['intervention-startTime'];
+    $longDescription = $_POST['intervention-longDescription'];
 
-$interventions = [];
-$filtered = false;
+    $startDatetime = "$date $time:00"; // Y-m-d H:i:s
+    $startTime = strtotime($startDatetime);   // => timestamp UNIX (ex: 1712143200)
 
-// Si on reçoit un filtre via POST (depuis list_employe)
-// if (isset($_POST['filter_user_id'])) {
-//     $filtered = true;
-//     $userId = $_POST['filter_user_id'];
+    // Récupérer la durée
+     $stmt = $db->prepare("SELECT duration FROM intervention_category WHERE id = :id");
+    $stmt->execute(['id' => $shortDescriptionId]);
+    $category = $stmt->fetch();
 
-//     $sql = $db->prepare("
-//         SELECT 
-//             i.*, 
-//             ic.label AS category_label, 
-//             ic.duration,
-//             u1.first_name AS employee_firstname,
-//             u1.last_name AS employee_lastname,
-//             u2.first_name AS client_firstname,
-//             u2.last_name AS client_lastname
-//         FROM intervention i
-//         LEFT JOIN intervention_category ic ON i.short_description_id = ic.id
-//         LEFT JOIN user u1 ON i.employee_id = u1.id
-//         LEFT JOIN user u2 ON i.client_id = u2.id
-//         WHERE i.employee_id = :id OR i.client_id = :id
-//         ORDER BY i.start_time DESC
-//     ");
-//     $sql->execute(['id' => $userId]);
-//     $interventions = $sql->fetchAll();
-// } else {
-//     // Sinon, on affiche tout
-//     $sql = $db->prepare("
-//         SELECT 
-//             i.*, 
-//             ic.label AS category_label, 
-//             ic.duration,
-//             u1.first_name AS employee_firstname,
-//             u1.last_name AS employee_lastname,
-//             u2.first_name AS client_firstname,
-//             u2.last_name AS client_lastname
-//         FROM intervention i
-//         LEFT JOIN intervention_category ic ON i.short_description_id = ic.id
-//         LEFT JOIN user u1 ON i.employee_id = u1.id
-//         LEFT JOIN user u2 ON i.client_id = u2.id
-//         ORDER BY i.start_time DESC
-//     ");
-//     $sql->execute();
-//     $interventions = $sql->fetchAll();
-// }
+    if ($category) {
+        $duree = $category['duration']; // en minutes
+
+        // Calcul date de fin
+        $endTime = $startTime + ($duree * 3600);
+
+        // Insertion
+        $insert = $db->prepare("INSERT INTO intervention (start_time, end_time, employee_id, client_id, short_description_id, long_description) 
+            VALUES (:start_time, :end_time, :employee, :client, :short_desc, :long_desc)");
+
+        $insert->execute([
+            'start_time' => $startTime,
+            'end_time' => $endTime,
+            'employee' => $_POST['intervention-employe'],
+            'client' => $_POST['intervention-client'],
+            'short_desc' => $shortDescriptionId,
+            'long_desc' => $longDescription
+        ]);
+    }
+    header("Location: list_intervention.php");
+}
+
+    if (isset($_POST['delete-id-intervention']) && !empty($_POST['delete-id-intervention'])) {
+        $deleteInterventions = $db->prepare('DELETE FROM intervention WHERE id = :idIntervention');
+        $deleteInterventions->execute([
+            "idIntervention" => $_POST['delete-id-intervention']
+        ]);
+        header('Location: list_intervention.php');
+    }
 ?>
 
 
@@ -79,8 +75,7 @@ $filtered = false;
                         u.last_name AS lastName,
                         u.id AS idClient
                         FROM user u
-                        INNER JOIN user_category uc ON u.user_category_id = uc.id 
-                        WHERE uc.id = 3');
+                    ');
                     $interventionClients->execute();
 
                     while($interventionClient = $interventionClients->fetch()) {
@@ -92,8 +87,13 @@ $filtered = false;
         </fieldset>
 
         <fieldset class="flex flex-col">
-            <label for="intervention-startTime" class="mb-2 text-sm opacity-70 font-bold">Date de début</label>
-            <input type='text' name='intervention-startTime' class="border border-gray-300 rounded-lg p-2 w-40"/>
+            <label for="intervention-dateTime" class="mb-2 text-sm opacity-70 font-bold">Date de début</label>
+            <input type='date' name='intervention-dateTime' class="border border-gray-300 rounded-lg p-2 w-40"/>
+        </fieldset>
+
+        <fieldset class="flex flex-col">
+            <label for="intervention-startTime" class="mb-2 text-sm opacity-70 font-bold">Heure de début</label>
+            <input type='time' name='intervention-startTime' class="border border-gray-300 rounded-lg p-2 w-40"/>
         </fieldset>
 
         <fieldset class="flex flex-col">
@@ -133,6 +133,10 @@ $filtered = false;
                 ?>
             </select>
         </fieldset>
+        <fieldset class="flex flex-col">
+            <label for="intervention-longDescription" class="mb-2 text-sm opacity-70 font-bold">Longue description</label>
+            <textarea name='intervention-longDescription' class="border border-gray-300 rounded-lg p-2 w-40"></textarea>
+        </fieldset>
         <input type='submit' value='Ajouter' name='add-intervention' class="bg-blue-600  mt-2 text-white rounded-lg py-2 px-10 font-bold cursor-pointer hover:bg-blue-500 transition duration-300 "/>
     </form>
     
@@ -142,12 +146,63 @@ $filtered = false;
                 <th class='py-4 px-10'>Client</th>
                 <th class='py-4 px-10'>Date de début</th>
                 <th class='py-4 px-10'>Date de fin</th>
-                <th class='py-4 px-10'>Intervenant</th>
+                <th class='py-4 px-10'>Employé</th>
+                <th class='py-4 px-10'>Intervention</th>
+                <th class='py-4 px-10'>Durée</th>
+                <th class='py-4 px-10'>Description</th>
                 <th class='py-4 px-10'>Actions</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">
-            
+            <?php
+                $sqlInterventions = $db->prepare("SELECT 
+                    i.id AS id_intervention,
+                    i.start_time AS startTime_intervention, 
+                    i.end_time AS endTime_intervention, 
+                    i.long_description AS longDescription_intervention, 
+                    ic.label AS category_label, 
+                    ic.duration AS duration,
+                    ue.first_name AS employee_first_name,
+                    ue.last_name AS employee_last_name,
+                    uc.first_name AS client_first_name,
+                    uc.last_name AS client_last_name 
+                    FROM intervention i
+                    INNER JOIN intervention_category ic ON i.short_description_id = ic.id
+                    INNER JOIN user ue ON i.employee_id = ue.id
+                    INNER JOIN user uc ON i.client_id = uc.id
+                    ORDER BY i.start_time 
+                    ");
+                $sqlInterventions->execute();
+
+                while($sqlIntervention = $sqlInterventions->fetch()) {
+                    $id = $sqlIntervention['id_intervention'];
+                    $clientName = ucfirst($sqlIntervention['client_first_name']) . ' ' . ucfirst($sqlIntervention['client_last_name']);
+                    $startTime = date('d/m/Y H:i', $sqlIntervention['startTime_intervention']);;
+                    $endTime = date('d/m/Y H:i', $sqlIntervention['endTime_intervention']);
+                    $employeeName = ucfirst($sqlIntervention['employee_first_name']) . ' ' . ucfirst($sqlIntervention['employee_last_name']);
+                    $interventionName = htmlspecialchars($sqlIntervention['category_label']);
+                    $duration = $sqlIntervention['duration'] . 'h';
+                    $longDescription = htmlspecialchars($sqlIntervention['longDescription_intervention']);
+
+                    echo "<tr class='hover:bg-gray-100 transition'>
+                            <td class='px-6 py-4'>" . $clientName . "</td>
+                            <td class='px-6 py-4'>" . $startTime . "</td>
+                            <td class='px-6 py-4'>" . $endTime . "</td>
+                            <td class='px-6 py-4'>" . $employeeName . "</td>
+                            <td class='px-6 py-4'>" . $interventionName . "</td>
+                            <td class='px-6 py-4'>" . $duration . "</td>
+                            <td class='px-6 py-4'>" . $longDescription . "</td>
+                            <td class='py-4 flex items-center justify-center gap-4'>
+                                <button onclick='editIntervention()' class='text-xs px-3 py-2 rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition'>Modifier</button>
+    
+                                <form method='POST'>
+                                    <input type='hidden' value='" . $id . "' name='delete-id-intervention'/>
+                                    <input type='submit' value='Supprimer' name='delete-intervention' class='text-xs px-3 py-2 rounded-xl border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition cursor-pointer'/>
+                                </form>
+                            </td>
+                        </tr>";
+                }
+            ?>
         </tbody>
     </table>
 
@@ -179,6 +234,13 @@ $filtered = false;
              </fieldset>
         </form>
     </div>
+
+    <?php
+       
+
+
+    
+    ?>
     <script src='script.js'></script>
 </body>
 </html>
