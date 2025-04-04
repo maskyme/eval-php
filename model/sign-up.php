@@ -13,7 +13,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tel = isset($_POST['tel']) ? trim($_POST['tel']) : '';
     $adresse = isset($_POST['adresse']) ? trim($_POST['adresse']) : '';
     $password = isset($_POST['password']) ? trim($_POST['password']) : '';
-    $user_categ = 3;
 
     // Vérifier si tous les champs sont remplis
     if (empty($nom) || empty($prenom) || empty($email) || empty($tel) || empty($adresse) || empty($password)) {
@@ -38,14 +37,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
     // Insérer l'utilisateur dans la base de données
-    $stmt = $db->prepare("INSERT INTO user (last_name, first_name, email, phone, adress, user_category_id, password) 
-                          VALUES (:nom, :prenom, :email, :tel, :adresse, :user_categ, :password)");
+    $stmt = $db->prepare("INSERT INTO user (last_name, first_name, email, phone, adress, password) 
+                          VALUES (:nom, :prenom, :email, :tel, :adresse, :password)");
     $stmt->bindParam(':nom', $nom);
     $stmt->bindParam(':prenom', $prenom);
     $stmt->bindParam(':email', $email);
     $stmt->bindParam(':tel', $tel);
     $stmt->bindParam(':adresse', $adresse);
-    $stmt->bindParam(':user_categ', $user_categ);
     $stmt->bindParam(':password', $hashed_password);
     $stmt->execute();
 
@@ -60,10 +58,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'email' => $email,
         'tel' => $tel,
         'adresse' => $adresse,
-        'user_categ' => $user_categ
     ];
 
     // Redirection après inscription
-    header('Location: ../index.php');
+    header('Location: ../list_intervention.php');
     exit;
 }

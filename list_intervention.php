@@ -49,27 +49,34 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel='stylesheet' href='style.css'/>
+    <link rel='stylesheet' href='style.css' />
     <link rel="stylesheet" href="https://cdn.hugeicons.com/font/hgi-stroke-rounded.css" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com"></script>   
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class='px-40 pt-10'>
+<body>
+    <?php
+      require_once 'header.php';
+      require_once 'logout.php';
+    ?>
+    <main class='px-40 pt-10'>
+
     <div class='w-full flex items-center justify-between pb-4'>
         <h2 class='text-2xl font-bold '>Liste des interventions</h2>
         <button onclick='popupIntervention()' class='text-xs px-3 py-2 rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition'>+ Ajouter une intervention</button>
     </div>
 
-    <form method='POST' class='flex items-end justify-start gap-10 mb-10'>
-        <fieldset class="flex flex-col">
-            <label for="intervention-client" class="mb-2 text-sm opacity-70 font-bold">Client</label>
-            <select name='intervention-client' id="intervention-client" class="border border-gray-300 rounded-lg p-2 w-40">
-                <option value='0'></option>
-                <?php
+        <form method='POST' class='flex items-end justify-start gap-10 mb-10'>
+            <fieldset class="flex flex-col">
+                <label for="intervention-client" class="mb-2 text-sm opacity-70 font-bold">Client</label>
+                <select name='intervention-client' id="intervention-client" class="border border-gray-300 rounded-lg p-2 w-40">
+                    <option value='0'></option>
+                    <?php
                     $interventionClients = $db->prepare('SELECT 
                         u.first_name AS firstName,
                         u.last_name AS lastName,
@@ -78,13 +85,13 @@
                     ');
                     $interventionClients->execute();
 
-                    while($interventionClient = $interventionClients->fetch()) {
+                    while ($interventionClient = $interventionClients->fetch()) {
                         $fullName = ucfirst($interventionClient['firstName']) . ' ' . ucfirst($interventionClient['lastName']);
                         echo "<option value='" . $interventionClient['idClient'] . "'>" . $fullName . "</option>";
                     }
-                ?>
-            </select>
-        </fieldset>
+                    ?>
+                </select>
+            </fieldset>
 
         <fieldset class="flex flex-col">
             <label for="intervention-dateTime" class="mb-2 text-sm opacity-70 font-bold">Date de début</label>
@@ -96,27 +103,27 @@
             <input type='time' name='intervention-startTime' class="border border-gray-300 rounded-lg p-2 w-40"/>
         </fieldset>
 
-        <fieldset class="flex flex-col">
-            <label for="intervention-name" class="mb-2 text-sm opacity-70 font-bold">Intervention</label>
-            <select name='intervention-name' id="intervention-name" class="border border-gray-300 rounded-lg p-2 w-48">
-                <option value='0'></option>
-                <?php
+            <fieldset class="flex flex-col">
+                <label for="intervention-name" class="mb-2 text-sm opacity-70 font-bold">Intervention</label>
+                <select name='intervention-name' id="intervention-name" class="border border-gray-300 rounded-lg p-2 w-48">
+                    <option value='0'></option>
+                    <?php
                     $interventionClients = $db->prepare('SELECT 
                        * FROM intervention_category');
                     $interventionClients->execute();
 
-                    while($interventionClient = $interventionClients->fetch()) {
+                    while ($interventionClient = $interventionClients->fetch()) {
                         echo "<option value='" . $interventionClient['id'] . "'>" .  ucfirst($interventionClient['label']) . "</option>";
                     }
-                ?>
-            </select>
-        </fieldset>
+                    ?>
+                </select>
+            </fieldset>
 
-        <fieldset class="flex flex-col">
-            <label for="intervention-employe" class="mb-2 text-sm opacity-70 font-bold">Employé</label>
-            <select name='intervention-employe' id="intervention-employe" class="border border-gray-300 rounded-lg p-2 w-48">
-                <option value='0'></option>
-                <?php
+            <fieldset class="flex flex-col">
+                <label for="intervention-employe" class="mb-2 text-sm opacity-70 font-bold">Employé</label>
+                <select name='intervention-employe' id="intervention-employe" class="border border-gray-300 rounded-lg p-2 w-48">
+                    <option value='0'></option>
+                    <?php
                     $interventionClients = $db->prepare('SELECT 
                         u.first_name AS firstName,
                         u.last_name AS lastName,
@@ -126,7 +133,7 @@
                         WHERE uc.id = 2');
                     $interventionClients->execute();
 
-                    while($interventionClient = $interventionClients->fetch()) {
+                    while ($interventionClient = $interventionClients->fetch()) {
                         $fullName = ucfirst($interventionClient['firstName']) . ' ' . ucfirst($interventionClient['lastName']);
                         echo "<option value='" . $interventionClient['idEmploye'] . "'>" .  $fullName . "</option>";
                     }
@@ -206,16 +213,16 @@
         </tbody>
     </table>
 
-    <!-- Popup create intervention -->
-    <div id='popup-intervention' class='hidden bg-white p-6 gap-3 rounded-lg flex flex-col w-full max-w-[600px] px-10 absolute top-1/2 shadow left-1/2 -translate-x-1/2 -translate-y-1/2'>
-        <button onclick='closePopupIntervention()'><i class="hgi hgi-stroke hgi-cancel-01 absolute right-10 top-4 text-xl cursor-pointer"></i></button>
-        <h2 class='text-center text-2xl mb-4'>Ajouter une intervention</h2>
+        <!-- Popup create intervention -->
+        <div id='popup-intervention' class='hidden bg-white p-6 gap-3 rounded-lg flex flex-col w-full max-w-[600px] px-10 absolute top-1/2 shadow left-1/2 -translate-x-1/2 -translate-y-1/2'>
+            <button onclick='closePopupIntervention()'><i class="hgi hgi-stroke hgi-cancel-01 absolute right-10 top-4 text-xl cursor-pointer"></i></button>
+            <h2 class='text-center text-2xl mb-4'>Ajouter une intervention</h2>
 
-        <form method='POST' class='flex flex-col items-center gap-4'>
-            <fieldset class="flex flex-col w-full">
-                <label for="intervention-client" class="mb-2 text-sm opacity-70 font-bold">Catégorie</label>
-                <select name='intervention-client' id="intervention-client" class="border border-gray-300 rounded-lg p-2">
-                    <?php
+            <form method='POST' class='flex flex-col items-center gap-4'>
+                <fieldset class="flex flex-col w-full">
+                    <label for="intervention-client" class="mb-2 text-sm opacity-70 font-bold">Catégorie</label>
+                    <select name='intervention-client' id="intervention-client" class="border border-gray-300 rounded-lg p-2">
+                        <?php
                         $interventionClients = $db->prepare('SELECT 
                             u.first_name AS firstName,
                             u.last_name AS lastName,
@@ -225,7 +232,7 @@
                             WHERE uc.id = 3');
                         $interventionClients->execute();
 
-                        while($interventionClient = $interventionClients->fetch()) {
+                        while ($interventionClient = $interventionClients->fetch()) {
                             $fullName = ucfirst($interventionClient['firstName']) . ' ' . ucfirst($interventionClient['lastName']);
                             echo "<option value='" . $interventionClient['idClient'] . "'>" . $fullName . "</option>";
                         }
@@ -243,4 +250,5 @@
     ?>
     <script src='script.js'></script>
 </body>
+
 </html>
