@@ -14,10 +14,26 @@ function closePopupEditUser() {
   document.getElementById("edit-user-popup").classList.add("hidden");
 }
 
-function popupIntervention() {
-  document.getElementById("popup-intervention").classList.remove("hidden");
+function editIntervention(
+  id,
+  clientId,
+  startDate,
+  startHour,
+  employeeId,
+  interventionId,
+  longDescription
+) {
+  document.getElementById("edit-intervention-popup").classList.remove("hidden");
+
+  document.getElementById("edit-id-intervention").value = id;
+  document.getElementById("edit-client").value = clientId;
+  document.getElementById("edit-startDate").value = startDate; // ✅ format "2025-04-04"
+  document.getElementById("edit-startHour").value = startHour; // ✅ format "14:00"
+  document.getElementById("edit-employe").value = employeeId;
+  document.getElementById("edit-intervention").value = interventionId;
+  document.getElementById("edit-longDescription").value = longDescription;
 }
 
 function closePopupIntervention() {
-  document.getElementById("popup-intervention").classList.add("hidden");
+  document.getElementById("edit-intervention-popup").classList.add("hidden");
 }

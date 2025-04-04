@@ -44,6 +44,52 @@
         ]);
         header('Location: list_intervention.php');
     }
+
+    if (isset($_POST['edit-intervention']) && !empty($_POST['edit-intervention'])) {
+    $id = $_POST['edit-id-intervention'];
+    $client = $_POST['edit-client'];
+    $employe = $_POST['edit-employe'];
+    $short_description_id = $_POST['edit-intervention'];
+    $longDescription = $_POST['edit-longDescription'];
+    $date = $_POST['edit-startDate']; // input date
+    $heure = $_POST['edit-startHour']; // input time
+
+    $startDatetime = "$date $heure:00";
+    $startTime = strtotime($startDatetime);
+
+    // On récupère la durée de l’intervention (en heures)
+    $stmt = $db->prepare("SELECT duration FROM intervention_category WHERE id = :id");
+    $stmt->execute(['id' => $short_description_id]);
+    $category = $stmt->fetch();
+
+    if ($category) {
+        $duree = $category['duration'];
+        $endTime = $startTime + ($duree * 3600);
+
+        // Mise à jour
+        $update = $db->prepare("UPDATE intervention 
+            SET start_time = :start_time, 
+                end_time = :end_time,
+                client_id = :client, 
+                employee_id = :employee,
+                short_description_id = :short_desc,
+                long_description = :long_desc 
+            WHERE id = :id");
+
+        $update->execute([
+            'start_time' => $startTime,
+            'end_time' => $endTime,
+            'client' => $client,
+            'employee' => $employe,
+            'short_desc' => $short_description_id,
+            'long_desc' => $longDescription,
+            'id' => $id
+        ]);
+    }
+
+    header("Location: list_intervention.php");
+}
+
 ?>
 
 
@@ -130,7 +176,7 @@
                         u.id AS idEmploye
                         FROM user u
                         INNER JOIN user_category uc ON u.user_category_id = uc.id 
-                        WHERE uc.id = 2');
+                        WHERE uc.id = 1 OR uc.id = 2');
                     $interventionClients->execute();
 
                     while ($interventionClient = $interventionClients->fetch()) {
@@ -166,11 +212,14 @@
                     i.id AS id_intervention,
                     i.start_time AS startTime_intervention, 
                     i.end_time AS endTime_intervention, 
+                    i.short_description_id AS short_description_id,
                     i.long_description AS longDescription_intervention, 
                     ic.label AS category_label, 
                     ic.duration AS duration,
+                    ue.id AS employee_id,
                     ue.first_name AS employee_first_name,
                     ue.last_name AS employee_last_name,
+                    uc.id AS client_id,
                     uc.first_name AS client_first_name,
                     uc.last_name AS client_last_name 
                     FROM intervention i
@@ -183,10 +232,15 @@
 
                 while($sqlIntervention = $sqlInterventions->fetch()) {
                     $id = $sqlIntervention['id_intervention'];
+                    $clientId = $sqlIntervention['client_id'];
                     $clientName = ucfirst($sqlIntervention['client_first_name']) . ' ' . ucfirst($sqlIntervention['client_last_name']);
                     $startTime = date('d/m/Y H:i', $sqlIntervention['startTime_intervention']);;
                     $endTime = date('d/m/Y H:i', $sqlIntervention['endTime_intervention']);
+                    $startDate = date('Y-m-d', $sqlIntervention['startTime_intervention']);
+                    $startHour = date('H:i', $sqlIntervention['startTime_intervention']);
+                    $employeeId = $sqlIntervention['employee_id'];
                     $employeeName = ucfirst($sqlIntervention['employee_first_name']) . ' ' . ucfirst($sqlIntervention['employee_last_name']);
+                    $interventionId = $sqlIntervention['short_description_id'];
                     $interventionName = htmlspecialchars($sqlIntervention['category_label']);
                     $duration = $sqlIntervention['duration'] . 'h';
                     $longDescription = htmlspecialchars($sqlIntervention['longDescription_intervention']);
@@ -200,7 +254,7 @@
                             <td class='px-6 py-4'>" . $duration . "</td>
                             <td class='px-6 py-4'>" . $longDescription . "</td>
                             <td class='py-4 flex items-center justify-center gap-4'>
-                                <button onclick='editIntervention()' class='text-xs px-3 py-2 rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition'>Modifier</button>
+                                <button onclick='editIntervention($id, $clientId, \"$startDate\", \"$startHour\", $employeeId, $interventionId, \"$longDescription\")' class='text-xs px-3 py-2 rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition'>Modifier</button>
     
                                 <form method='POST'>
                                     <input type='hidden' value='" . $id . "' name='delete-id-intervention'/>
@@ -214,40 +268,71 @@
     </table>
 
         <!-- Popup create intervention -->
-        <div id='popup-intervention' class='hidden bg-white p-6 gap-3 rounded-lg flex flex-col w-full max-w-[600px] px-10 absolute top-1/2 shadow left-1/2 -translate-x-1/2 -translate-y-1/2'>
-            <button onclick='closePopupIntervention()'><i class="hgi hgi-stroke hgi-cancel-01 absolute right-10 top-4 text-xl cursor-pointer"></i></button>
-            <h2 class='text-center text-2xl mb-4'>Ajouter une intervention</h2>
+        
 
-            <form method='POST' class='flex flex-col items-center gap-4'>
+    <div id="edit-intervention-popup" class='hidden bg-white p-6 gap-3 rounded-lg flex flex-col w-full max-w-[600px] px-10 absolute top-1/2 shadow left-1/2 -translate-x-1/2 -translate-y-1/2'>
+        <button onclick='closePopupIntervention()'><i class="hgi hgi-stroke hgi-cancel-01 absolute right-10 top-4 text-xl cursor-pointer"></i></button>
+        <h2 class='text-center text-2xl font-bold mb-4'>Modifier les informations</h2>
+        <form method='POST' class='flex flex-col items-center gap-4'>
+            <input type="hidden" id="edit-id-intervention" name="edit-id-intervention"/>
+            <fieldset class="flex flex-col w-full">
+                <label for="edit-client" class="mb-2 text-sm opacity-70 font-bold">Clients</label>
+                <select name='edit-client' id="edit-client" class="border border-gray-300 rounded-lg p-2">
+                <?php
+            $clients = $db->query("SELECT id, first_name, last_name FROM user");
+            while ($c = $clients->fetch()) {
+                $fullName = ucfirst($c['first_name']) . ' ' . ucfirst($c['last_name']);
+                echo "<option value='{$c['id']}'>$fullName</option>";
+            }
+        ?>
+            </select>
+                </fieldset>
+
                 <fieldset class="flex flex-col w-full">
-                    <label for="intervention-client" class="mb-2 text-sm opacity-70 font-bold">Catégorie</label>
-                    <select name='intervention-client' id="intervention-client" class="border border-gray-300 rounded-lg p-2">
-                        <?php
-                        $interventionClients = $db->prepare('SELECT 
-                            u.first_name AS firstName,
-                            u.last_name AS lastName,
-                            u.id AS idClient
-                            FROM user u
-                            INNER JOIN user_category uc ON u.user_category_id = uc.id 
-                            WHERE uc.id = 3');
-                        $interventionClients->execute();
+  <label for="edit-startDate" class="mb-2 text-sm opacity-70 font-bold">Date de début</label>
+  <input type="date" name="edit-startDate" id="edit-startDate" class="border border-gray-300 rounded-lg p-2" />
+</fieldset>
 
-                        while ($interventionClient = $interventionClients->fetch()) {
-                            $fullName = ucfirst($interventionClient['firstName']) . ' ' . ucfirst($interventionClient['lastName']);
-                            echo "<option value='" . $interventionClient['idClient'] . "'>" . $fullName . "</option>";
-                        }
-                    ?>
-                </select>
-             </fieldset>
+
+                <fieldset class="flex flex-col w-full">
+    <label for="edit-startHour" class="mb-2 text-sm opacity-70 font-bold">Heure de début</label>
+    <input type="time" name="edit-startHour" id="edit-startHour" class="border border-gray-300 rounded-lg p-2" />
+</fieldset>
+
+
+
+<fieldset class="flex flex-col w-full">
+    <label for="edit-intervention" class="mb-2 text-sm opacity-70 font-bold">Intervention</label>
+    <select name="edit-intervention" id="edit-intervention" class="border border-gray-300 rounded-lg p-2">
+        <?php
+            $interventionCats = $db->query('SELECT id, label FROM intervention_category');
+            while ($cat = $interventionCats->fetch()) {
+                echo "<option value='{$cat['id']}'>" . ucfirst($cat['label']) . "</option>";
+            }
+        ?>
+    </select>
+</fieldset>
+
+<fieldset class="flex flex-col w-full">
+    <label for="edit-employe" class="mb-2 text-sm opacity-70 font-bold">Employé</label>
+    <select name="edit-employe" id="edit-employe" class="border border-gray-300 rounded-lg p-2">
+        <?php
+            $employes = $db->query("SELECT id, first_name, last_name FROM user WHERE user_category_id = 1 OR user_category_id = 2");
+            while ($e = $employes->fetch()) {
+                $fullName = ucfirst($e['first_name']) . ' ' . ucfirst($e['last_name']);
+                echo "<option value='{$e['id']}'>$fullName</option>";
+            }
+        ?>
+    </select>
+</fieldset>
+
+<fieldset class="flex flex-col w-full">
+    <label for="edit-longDescription" class="mb-2 text-sm opacity-70 font-bold">Description</label>
+    <textarea name="edit-longDescription" placeholder='Description' id="edit-longDescription" class="border border-gray-300 rounded-lg p-2"></textarea>
+</fieldset>
+<input type='submit' value='Modifier' name='edit-intervention' class="bg-blue-600  mt-2 text-white rounded-lg p-2 font-bold cursor-pointer hover:bg-blue-500 transition duration-300 w-full"/>
         </form>
     </div>
-
-    <?php
-       
-
-
-    
-    ?>
     <script src='script.js'></script>
 </body>
 
