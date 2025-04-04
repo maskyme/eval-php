@@ -69,7 +69,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class='px-40 pt-10'>
+<body>
+    <?php
+      require_once 'header.php';
+      require_once 'logout.php';
+    ?>
+    <main class='px-40 pt-10'>
+
     <h2 class='text-2xl font-bold pb-4'>Liste des employé</h2>
     <table class='min-w-full table-auto bg-white rounded-xl shadow-md overflow-hidden text-sm text-center'>
         <thead class="bg-blue-600 text-white uppercase text-xs tracking-wide">
@@ -183,6 +189,7 @@
         <h2 class='text-center text-2xl mb-4'>Intervention</h2>
     </div>
     
+    </main>
 
     <script src='script.js'></script>
 </body>

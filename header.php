@@ -21,13 +21,13 @@ $role = $_SESSION['role'];
             <ul class="nav-list flex gap-5 sm:gap-10">
                 <?php
                 if ($role == 1) {
-                    echo '<li><a href="#list_employe" class="text-sm sm:text-xl font-bold hover:opacity-90">Employés</a></li>';
-                    echo '<li><a href="#list_client" class="text-sm sm:text-xl font-bold hover:opacity-90">Employés</a></li>';
+                    echo '<li><a href="./list_employe.php" class="text-sm sm:text-xl font-bold hover:opacity-90">Employés</a></li>';
+                    echo '<li><a href="./list_client.php" class="text-sm sm:text-xl font-bold hover:opacity-90">Clients</a></li>';
                 }
 
                 ?>
-                <li><a href="#interventions" class="text-sm sm:text-xl font-bold hover:opacity-90">Interventions</a></li>
-                <li><a href="#account" class="text-sm sm:text-xl font-bold hover:opacity-90">Account</a></li>
+                <li><a href="./list_intervention.php" class="text-sm sm:text-xl font-bold hover:opacity-90">Interventions</a></li>
+                <li><a href="./account.php" class="text-sm sm:text-xl font-bold hover:opacity-90">Account</a></li>
             </ul>
         </nav>
     </div>

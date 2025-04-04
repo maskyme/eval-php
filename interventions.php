@@ -39,6 +39,11 @@ require_once "./bdd.php";
 </head>
 
 <body>
+
+    <?php
+      require_once 'header.php';
+      require_once 'logout.php';
+    ?>
     <div class="mt-5 flex items-center flex-col w-full w-full max-w-[1600px] mx-auto">
         <div class="flex items-center justify-between w-full mb-5">
             <h2>Interventions List</h2>
@@ -57,7 +62,9 @@ require_once "./bdd.php";
             </thead>
             <tbody id="interventionTable">
                 <!-- Rows will be dynamically generated -->
+                
                 <?php
+                require_once 'header.php';
                 try {
                     $stmt = $db->prepare("SELECT * FROM intervention");
                     $stmt->execute();

@@ -63,16 +63,17 @@ $filtered = false;
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-
 <body>
     <?php
-    require_once './header.php';
+      require_once 'header.php';
+      require_once 'logout.php';
     ?>
-    <div class='px-40 pt-10'>
-        <div class='w-full flex items-center justify-between pb-4'>
-            <h2 class='text-2xl font-bold '>Liste des interventions</h2>
-            <button onclick='popupIntervention()' class='text-xs px-3 py-2 rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition'>+ Ajouter une intervention</button>
-        </div>
+    <main class='px-40 pt-10'>
+
+    <div class='w-full flex items-center justify-between pb-4'>
+        <h2 class='text-2xl font-bold '>Liste des interventions</h2>
+        <button onclick='popupIntervention()' class='text-xs px-3 py-2 rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition'>+ Ajouter une intervention</button>
+    </div>
 
         <form method='POST' class='flex items-end justify-start gap-10 mb-10'>
             <fieldset class="flex flex-col">
@@ -180,13 +181,12 @@ $filtered = false;
                             $fullName = ucfirst($interventionClient['firstName']) . ' ' . ucfirst($interventionClient['lastName']);
                             echo "<option value='" . $interventionClient['idClient'] . "'>" . $fullName . "</option>";
                         }
-                        ?>
-                    </select>
-                </fieldset>
-            </form>
-        </div>
+                    ?>
+                </select>
+             </fieldset>
+        </form>
     </div>
-
+    </main>
     <script src='script.js'></script>
 </body>
 
