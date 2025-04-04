@@ -155,6 +155,7 @@
         Filtre
         <form method="get" class="flex text-lg gap-4">
             <select name="idUser" id="idUser" class="border border-gray-300 rounded-lg p-2">
+                <option value=''> </option>
                 <?php
                     $employes = $db->query("SELECT id, first_name, last_name FROM user WHERE user_category_id = 1 OR user_category_id = 2");
                     while ($e = $employes->fetch()) {
@@ -170,6 +171,11 @@
                 ?>
             </select>
             <input type="submit" value="Filtrer" class="py-2 px-3 bg-blue-600 text-white font-bold rounded-lg">
+            <?php
+                if (isset($_GET['idUser'])) {
+                    echo '<a href="./list_intervention.php" class="py-2 px-3 bg-red-600 text-white font-bold rounded-lg">Réinitialisé</a>';
+                }
+            ?>
         </form>
     </div>
     
@@ -219,10 +225,13 @@
                     i.end_time AS endTime_intervention, 
                     i.long_description AS longDescription_intervention, 
                     i.employee_id as employee_id,
+                    ic.id AS short_description_id,
                     ic.label AS category_label, 
                     ic.duration AS duration,
+                    ue.id AS employee_id,
                     ue.first_name AS employee_first_name,
                     ue.last_name AS employee_last_name,
+                    uc.id AS client_id,
                     uc.first_name AS client_first_name,
                     uc.last_name AS client_last_name 
                     FROM intervention i
