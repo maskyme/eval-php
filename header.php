@@ -9,7 +9,7 @@
 
 </head>
 <body>
-    <header class="header mb-10">
+    <header class="header">
         <div class="logo">
             <a href="#">MyLogo</a>
         </div>
