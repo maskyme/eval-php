@@ -1,5 +1,7 @@
 <?php
 require_once "./bdd.php";
+
+
 ?>
 
 <!DOCTYPE html>
@@ -47,8 +49,11 @@ require_once "./bdd.php";
     <div class="mt-5 flex items-center flex-col w-full w-full max-w-[1600px] mx-auto">
         <div class="flex items-center justify-between w-full mb-5">
             <h2>Interventions List</h2>
-            <button type="button" class="bg-blue-600 px-3 py-2 text-white font-bold w-fit">Créer une intervention</button>
+            <button type="button" class="bg-blue-600 px-3 py-2 text-white font-bold w-fit">Créer une catégorie</button>
+            <button type="button" class="bg-blue-600 px-3 py-2 text-white font-bold w-fit" onclick="addCategory()">Créer une intervention</button>
         </div>
+        
+
         <table class="w-full text-sm text-left rtl:text-right">
             <thead class="text-xs text-white uppercase bg-blue-600">
                 <tr>
