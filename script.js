@@ -10,8 +10,16 @@ function editUser(id, lastName, firstName, phone, email, adress, id_category) {
   document.getElementById("edit-category-user").value = id_category;
 }
 
+function addCategory() {
+  document.getElementById("add-intervention-category-popup").classList.remove("hidden");
+}
+
 function closePopupEditUser() {
   document.getElementById("edit-user-popup").classList.add("hidden");
+}
+
+function closeCategoryPopup() {
+  document.getElementById("add-intervention-category-popup").classList.add("hidden");
 }
 
 function editIntervention(

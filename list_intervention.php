@@ -1,7 +1,31 @@
 <?php
-    require_once './bdd.php';
+require_once './bdd.php';
 
-     if (isset($_POST['add-intervention']) && !empty($_POST['add-intervention'])) {
+if (isset($_POST['add-category']) && !empty($_POST['add-category'])) {
+    $sql = "INSERT INTO intervention_category (label, duration) VALUES ";
+    $params = [];
+    $updates = [];
+
+    if (!empty($_POST['label'])) {
+        $updates[] = ":label";
+        $params['label'] = $_POST['label'];
+    }
+
+    if (!empty($_POST['duration'])) {
+        $updates[] = ":duration";
+        $params['duration'] = $_POST['duration'];
+    }
+
+
+    if (!empty($updates)) {
+        $sql .= '(' . implode(", ", $updates) . ');';
+
+        $editUsers = $db->prepare($sql);
+        $editUsers->execute($params);
+    }
+}
+
+if (isset($_POST['add-intervention']) && !empty($_POST['add-intervention'])) {
     $shortDescriptionId = $_POST['intervention-name'];
     $date = $_POST['intervention-dateTime'];
     $time = $_POST['intervention-startTime'];
@@ -11,7 +35,7 @@
     $startTime = strtotime($startDatetime);   // => timestamp UNIX (ex: 1712143200)
 
     // Récupérer la durée
-     $stmt = $db->prepare("SELECT duration FROM intervention_category WHERE id = :id");
+    $stmt = $db->prepare("SELECT duration FROM intervention_category WHERE id = :id");
     $stmt->execute(['id' => $shortDescriptionId]);
     $category = $stmt->fetch();
 
@@ -37,15 +61,15 @@
     header("Location: list_intervention.php");
 }
 
-    if (isset($_POST['delete-id-intervention']) && !empty($_POST['delete-id-intervention'])) {
-        $deleteInterventions = $db->prepare('DELETE FROM intervention WHERE id = :idIntervention');
-        $deleteInterventions->execute([
-            "idIntervention" => $_POST['delete-id-intervention']
-        ]);
-        header('Location: list_intervention.php');
-    }
+if (isset($_POST['delete-id-intervention']) && !empty($_POST['delete-id-intervention'])) {
+    $deleteInterventions = $db->prepare('DELETE FROM intervention WHERE id = :idIntervention');
+    $deleteInterventions->execute([
+        "idIntervention" => $_POST['delete-id-intervention']
+    ]);
+    header('Location: list_intervention.php');
+}
 
-    if (isset($_POST['edit-intervention']) && !empty($_POST['edit-intervention'])) {
+if (isset($_POST['edit-intervention']) && !empty($_POST['edit-intervention'])) {
     $id = $_POST['edit-id-intervention'];
     $client = $_POST['edit-client'];
     $employe = $_POST['edit-employe'];
@@ -105,17 +129,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body>
     <?php
-      require_once 'header.php';
-      require_once 'logout.php';
+    require_once 'header.php';
+    require_once 'logout.php';
     ?>
     <main class='px-40 pt-10'>
 
-    <div class='w-full flex items-center justify-between pb-4'>
-        <h2 class='text-2xl font-bold '>Liste des interventions</h2>
-        <button onclick='popupIntervention()' class='text-xs px-3 py-2 rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition'>+ Ajouter une intervention</button>
-    </div>
+
+
+        <div class='w-full flex items-center justify-between pb-4'>
+            <h2 class='text-2xl font-bold '>Liste des interventions</h2>
+            <button onclick='' class='text-xs px-3 py-2 rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition'>+ Ajouter une intervention</button>
+            <button type="button" class='text-xs px-3 py-2 rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition' onclick="addCategory()">+ Ajouter une categorie</button>
+        </div>
 
         <form method='POST' class='flex items-end justify-start gap-10 mb-10'>
             <fieldset class="flex flex-col">
@@ -139,15 +167,15 @@
                 </select>
             </fieldset>
 
-        <fieldset class="flex flex-col">
-            <label for="intervention-dateTime" class="mb-2 text-sm opacity-70 font-bold">Date de début</label>
-            <input type='date' name='intervention-dateTime' class="border border-gray-300 rounded-lg p-2 w-40"/>
-        </fieldset>
+            <fieldset class="flex flex-col">
+                <label for="intervention-dateTime" class="mb-2 text-sm opacity-70 font-bold">Date de début</label>
+                <input type='date' name='intervention-dateTime' class="border border-gray-300 rounded-lg p-2 w-40" />
+            </fieldset>
 
-        <fieldset class="flex flex-col">
-            <label for="intervention-startTime" class="mb-2 text-sm opacity-70 font-bold">Heure de début</label>
-            <input type='time' name='intervention-startTime' class="border border-gray-300 rounded-lg p-2 w-40"/>
-        </fieldset>
+            <fieldset class="flex flex-col">
+                <label for="intervention-startTime" class="mb-2 text-sm opacity-70 font-bold">Heure de début</label>
+                <input type='time' name='intervention-startTime' class="border border-gray-300 rounded-lg p-2 w-40" />
+            </fieldset>
 
             <fieldset class="flex flex-col">
                 <label for="intervention-name" class="mb-2 text-sm opacity-70 font-bold">Intervention</label>
@@ -183,31 +211,31 @@
                         $fullName = ucfirst($interventionClient['firstName']) . ' ' . ucfirst($interventionClient['lastName']);
                         echo "<option value='" . $interventionClient['idEmploye'] . "'>" .  $fullName . "</option>";
                     }
-                ?>
-            </select>
-        </fieldset>
-        <fieldset class="flex flex-col">
-            <label for="intervention-longDescription" class="mb-2 text-sm opacity-70 font-bold">Longue description</label>
-            <textarea name='intervention-longDescription' class="border border-gray-300 rounded-lg p-2 w-40"></textarea>
-        </fieldset>
-        <input type='submit' value='Ajouter' name='add-intervention' class="bg-blue-600  mt-2 text-white rounded-lg py-2 px-10 font-bold cursor-pointer hover:bg-blue-500 transition duration-300 "/>
-    </form>
-    
-    <table class='min-w-full table-auto bg-white rounded-xl shadow-md overflow-hidden text-sm text-center'>
-        <thead class="bg-blue-600 text-white uppercase text-xs tracking-wide">
-            <tr class='bg-blue-600 text-white'>
-                <th class='py-4 px-10'>Client</th>
-                <th class='py-4 px-10'>Date de début</th>
-                <th class='py-4 px-10'>Date de fin</th>
-                <th class='py-4 px-10'>Employé</th>
-                <th class='py-4 px-10'>Intervention</th>
-                <th class='py-4 px-10'>Durée</th>
-                <th class='py-4 px-10'>Description</th>
-                <th class='py-4 px-10'>Actions</th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-100">
-            <?php
+                    ?>
+                </select>
+            </fieldset>
+            <fieldset class="flex flex-col">
+                <label for="intervention-longDescription" class="mb-2 text-sm opacity-70 font-bold">Longue description</label>
+                <textarea name='intervention-longDescription' class="border border-gray-300 rounded-lg p-2 w-40"></textarea>
+            </fieldset>
+            <input type='submit' value='Ajouter' name='add-intervention' class="bg-blue-600  mt-2 text-white rounded-lg py-2 px-10 font-bold cursor-pointer hover:bg-blue-500 transition duration-300 " />
+        </form>
+
+        <table class='min-w-full table-auto bg-white rounded-xl shadow-md overflow-hidden text-sm text-center'>
+            <thead class="bg-blue-600 text-white uppercase text-xs tracking-wide">
+                <tr class='bg-blue-600 text-white'>
+                    <th class='py-4 px-10'>Client</th>
+                    <th class='py-4 px-10'>Date de début</th>
+                    <th class='py-4 px-10'>Date de fin</th>
+                    <th class='py-4 px-10'>Employé</th>
+                    <th class='py-4 px-10'>Intervention</th>
+                    <th class='py-4 px-10'>Durée</th>
+                    <th class='py-4 px-10'>Description</th>
+                    <th class='py-4 px-10'>Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                <?php
                 $sqlInterventions = $db->prepare("SELECT 
                     i.id AS id_intervention,
                     i.start_time AS startTime_intervention, 
@@ -230,7 +258,7 @@
                     ");
                 $sqlInterventions->execute();
 
-                while($sqlIntervention = $sqlInterventions->fetch()) {
+                while ($sqlIntervention = $sqlInterventions->fetch()) {
                     $id = $sqlIntervention['id_intervention'];
                     $clientId = $sqlIntervention['client_id'];
                     $clientName = ucfirst($sqlIntervention['client_first_name']) . ' ' . ucfirst($sqlIntervention['client_last_name']);
@@ -263,77 +291,103 @@
                             </td>
                         </tr>";
                 }
-            ?>
-        </tbody>
-    </table>
+                ?>
+            </tbody>
+        </table>
 
         <!-- Popup create intervention -->
-        
 
-    <div id="edit-intervention-popup" class='hidden bg-white p-6 gap-3 rounded-lg flex flex-col w-full max-w-[600px] px-10 absolute top-1/2 shadow left-1/2 -translate-x-1/2 -translate-y-1/2'>
-        <button onclick='closePopupIntervention()'><i class="hgi hgi-stroke hgi-cancel-01 absolute right-10 top-4 text-xl cursor-pointer"></i></button>
-        <h2 class='text-center text-2xl font-bold mb-4'>Modifier les informations</h2>
-        <form method='POST' class='flex flex-col items-center gap-4'>
-            <input type="hidden" id="edit-id-intervention" name="edit-id-intervention"/>
-            <fieldset class="flex flex-col w-full">
-                <label for="edit-client" class="mb-2 text-sm opacity-70 font-bold">Clients</label>
-                <select name='edit-client' id="edit-client" class="border border-gray-300 rounded-lg p-2">
-                <?php
-            $clients = $db->query("SELECT id, first_name, last_name FROM user");
-            while ($c = $clients->fetch()) {
-                $fullName = ucfirst($c['first_name']) . ' ' . ucfirst($c['last_name']);
-                echo "<option value='{$c['id']}'>$fullName</option>";
-            }
-        ?>
-            </select>
+
+        <div id="edit-intervention-popup" class='hidden bg-white p-6 gap-3 rounded-lg flex flex-col w-full max-w-[600px] px-10 absolute top-1/2 shadow left-1/2 -translate-x-1/2 -translate-y-1/2'>
+            <button onclick='closePopupIntervention()'><i class="hgi hgi-stroke hgi-cancel-01 absolute right-10 top-4 text-xl cursor-pointer"></i></button>
+            <h2 class='text-center text-2xl font-bold mb-4'>Modifier les informations</h2>
+            <form method='POST' class='flex flex-col items-center gap-4'>
+                <input type="hidden" id="edit-id-intervention" name="edit-id-intervention" />
+                <fieldset class="flex flex-col w-full">
+                    <label for="edit-client" class="mb-2 text-sm opacity-70 font-bold">Clients</label>
+                    <select name='edit-client' id="edit-client" class="border border-gray-300 rounded-lg p-2">
+                        <?php
+                        $clients = $db->query("SELECT id, first_name, last_name FROM user");
+                        while ($c = $clients->fetch()) {
+                            $fullName = ucfirst($c['first_name']) . ' ' . ucfirst($c['last_name']);
+                            echo "<option value='{$c['id']}'>$fullName</option>";
+                        }
+                        ?>
+                    </select>
                 </fieldset>
 
                 <fieldset class="flex flex-col w-full">
-  <label for="edit-startDate" class="mb-2 text-sm opacity-70 font-bold">Date de début</label>
-  <input type="date" name="edit-startDate" id="edit-startDate" class="border border-gray-300 rounded-lg p-2" />
-</fieldset>
+                    <label for="edit-startDate" class="mb-2 text-sm opacity-70 font-bold">Date de début</label>
+                    <input type="date" name="edit-startDate" id="edit-startDate" class="border border-gray-300 rounded-lg p-2" />
+                </fieldset>
 
 
                 <fieldset class="flex flex-col w-full">
-    <label for="edit-startHour" class="mb-2 text-sm opacity-70 font-bold">Heure de début</label>
-    <input type="time" name="edit-startHour" id="edit-startHour" class="border border-gray-300 rounded-lg p-2" />
-</fieldset>
+                    <label for="edit-startHour" class="mb-2 text-sm opacity-70 font-bold">Heure de début</label>
+                    <input type="time" name="edit-startHour" id="edit-startHour" class="border border-gray-300 rounded-lg p-2" />
+                </fieldset>
 
 
 
-<fieldset class="flex flex-col w-full">
-    <label for="edit-intervention" class="mb-2 text-sm opacity-70 font-bold">Intervention</label>
-    <select name="edit-intervention" id="edit-intervention" class="border border-gray-300 rounded-lg p-2">
-        <?php
-            $interventionCats = $db->query('SELECT id, label FROM intervention_category');
-            while ($cat = $interventionCats->fetch()) {
-                echo "<option value='{$cat['id']}'>" . ucfirst($cat['label']) . "</option>";
-            }
-        ?>
-    </select>
-</fieldset>
+                <fieldset class="flex flex-col w-full">
+                    <label for="edit-intervention" class="mb-2 text-sm opacity-70 font-bold">Intervention</label>
+                    <select name="edit-intervention" id="edit-intervention" class="border border-gray-300 rounded-lg p-2">
+                        <?php
+                        $interventionCats = $db->query('SELECT id, label FROM intervention_category');
+                        while ($cat = $interventionCats->fetch()) {
+                            echo "<option value='{$cat['id']}'>" . ucfirst($cat['label']) . "</option>";
+                        }
+                        ?>
+                    </select>
+                </fieldset>
 
-<fieldset class="flex flex-col w-full">
-    <label for="edit-employe" class="mb-2 text-sm opacity-70 font-bold">Employé</label>
-    <select name="edit-employe" id="edit-employe" class="border border-gray-300 rounded-lg p-2">
-        <?php
-            $employes = $db->query("SELECT id, first_name, last_name FROM user WHERE user_category_id = 1 OR user_category_id = 2");
-            while ($e = $employes->fetch()) {
-                $fullName = ucfirst($e['first_name']) . ' ' . ucfirst($e['last_name']);
-                echo "<option value='{$e['id']}'>$fullName</option>";
-            }
-        ?>
-    </select>
-</fieldset>
+                <fieldset class="flex flex-col w-full">
+                    <label for="edit-employe" class="mb-2 text-sm opacity-70 font-bold">Employé</label>
+                    <select name="edit-employe" id="edit-employe" class="border border-gray-300 rounded-lg p-2">
+                        <?php
+                        $employes = $db->query("SELECT id, first_name, last_name FROM user WHERE user_category_id = 1 OR user_category_id = 2");
+                        while ($e = $employes->fetch()) {
+                            $fullName = ucfirst($e['first_name']) . ' ' . ucfirst($e['last_name']);
+                            echo "<option value='{$e['id']}'>$fullName</option>";
+                        }
+                        ?>
+                    </select>
+                </fieldset>
 
-<fieldset class="flex flex-col w-full">
-    <label for="edit-longDescription" class="mb-2 text-sm opacity-70 font-bold">Description</label>
-    <textarea name="edit-longDescription" placeholder='Description' id="edit-longDescription" class="border border-gray-300 rounded-lg p-2"></textarea>
-</fieldset>
-<input type='submit' value='Modifier' name='edit-intervention' class="bg-blue-600  mt-2 text-white rounded-lg p-2 font-bold cursor-pointer hover:bg-blue-500 transition duration-300 w-full"/>
-        </form>
-    </div>
-    <script src='script.js'></script>
+                <fieldset class="flex flex-col w-full">
+                    <label for="edit-longDescription" class="mb-2 text-sm opacity-70 font-bold">Description</label>
+                    <textarea name="edit-longDescription" placeholder='Description' id="edit-longDescription" class="border border-gray-300 rounded-lg p-2"></textarea>
+                </fieldset>
+                <input type='submit' value='Modifier' name='edit-intervention' class="bg-blue-600  mt-2 text-white rounded-lg p-2 font-bold cursor-pointer hover:bg-blue-500 transition duration-300 w-full" />
+            </form>
+        </div>
+
+        <!-- Popup edit user -->
+        <div id="add-intervention-category-popup" class='hidden bg-white p-6 gap-3 rounded-lg flex flex-col w-full max-w-[600px] px-10 absolute top-1/2 shadow left-1/2 -translate-x-1/2 -translate-y-1/2'>
+            <button onclick='closeCategoryPopup()'><i class="hgi hgi-stroke hgi-cancel-01 absolute right-10 top-4 text-xl cursor-pointer"></i></button>
+            <h2 class='text-center text-2xl font-bold mb-4'>Ajouter une catégorie d'intervention</h2>
+            <form method='POST' class='flex flex-col items-center gap-4' action="./list_intervention.php">
+                <input type="hidden" id="edit-id-user" name="edit-id-user" />
+                <div class="flex gap-4 w-full">
+                    <fieldset class="flex flex-col w-1/2">
+                        <label for="label" class="mb-2 text-sm opacity-70 font-bold">Description</label>
+                        <input type='text' placeholder='Description' name='label' id='label' class="border border-gray-300 rounded-lg p-2" />
+                    </fieldset>
+                    <fieldset class="flex flex-col w-1/2">
+                        <label for="duration" class="mb-2 text-sm opacity-70 font-bold">Durée</label>
+                        <input type='text' placeholder='Durée' name='duration' id='duration' class="border border-gray-300 rounded-lg p-2" />
+                    </fieldset>
+                    <input type='submit' value='Ajouter' name='add-category' class="bg-blue-600  mt-2 text-white rounded-lg p-2 font-bold cursor-pointer hover:bg-blue-500 transition duration-300 w-full" />
+            </form>
+        </div>
+
+        <!-- Popup edit user -->
+        <div id="popup-intervention" class='hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white border-2 rounded-xl shadow py-10 px-10'>
+            <button onclick='closePopupIntervention()'><i class="hgi hgi-stroke hgi-cancel-01 absolute right-10 top-4 text-xl cursor-pointer"></i></button>
+            <h2 class='text-center text-2xl mb-4'>Intervention</h2>
+        </div>
+
+        <script src='script.js'></script>
 </body>
 
 </html>
