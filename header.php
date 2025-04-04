@@ -1,6 +1,6 @@
 <?php
 session_start();
-$user = $_SESSION['user'];
+$user = $_SESSION['connected_user'];
 
 if (isset($user['user_categ'])) {
     $_SESSION['role'] = $user['user_categ'];
