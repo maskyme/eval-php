@@ -59,7 +59,6 @@
         <tbody class="divide-y divide-gray-100">
             <?php
                 $user_id = $user['id'];
-                if ($user['user_categ'] == 2) {
                 $sqlInterventions = $db->prepare("SELECT 
                     i.id AS id_intervention,
                     i.start_time AS startTime_intervention, 
@@ -76,31 +75,9 @@
                     INNER JOIN intervention_category ic ON i.short_description_id = ic.id
                     INNER JOIN user ue ON i.employee_id = ue.id
                     INNER JOIN user uc ON i.client_id = uc.id
-                    WHERE employee_id = $user_id
+                    WHERE employee_id = $user_id OR client_id = $user_id
                     ORDER BY i.start_time 
                     ");
-                }
-                else if ($user['user_categ'] == null) {
-                    $sqlInterventions = $db->prepare("SELECT 
-                    i.id AS id_intervention,
-                    i.start_time AS startTime_intervention, 
-                    i.end_time AS endTime_intervention, 
-                    i.long_description AS longDescription_intervention, 
-                    i.client_id as client_id,
-                    ic.label AS category_label, 
-                    ic.duration AS duration,
-                    ue.first_name AS employee_first_name,
-                    ue.last_name AS employee_last_name,
-                    uc.first_name AS client_first_name,
-                    uc.last_name AS client_last_name 
-                    FROM intervention i
-                    INNER JOIN intervention_category ic ON i.short_description_id = ic.id
-                    INNER JOIN user ue ON i.employee_id = ue.id
-                    INNER JOIN user uc ON i.client_id = uc.id
-                    WHERE client_id = $user_id
-                    ORDER BY i.start_time 
-                    ");
-                }
                 $sqlInterventions->execute();
 
                 while($sqlIntervention = $sqlInterventions->fetch()) {
